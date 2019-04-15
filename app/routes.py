@@ -79,7 +79,7 @@ def user(username):#value of the path variable is stored in this parameter
 @microblogapp.route('/edit_profile', methods=['GET','POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm()
+    form = EditProfileForm(current_user.username) 
     if form.validate_on_submit():#if true, then save the entered data to db
         current_user.username = form.username.data
         current_user.about_me = form.about_me.data
@@ -89,12 +89,12 @@ def edit_profile():
     elif request.method == 'GET':#if it is a get request, pre-populate the fields with already saved data
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
-        return render_template('edit_profile.html', title='Edit Profile', form=form)
+    return render_template('edit_profile.html', title='Edit Profile',form=form)
 
 @microblogapp.before_request
-def before_request():
+def before_request():  #this is called before every view function
     if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
+        current_user.last_seen = datetime.utcnow()#updating last seen value at every request
         db.session.commit()
     
 @microblogapp.route('/logout')
