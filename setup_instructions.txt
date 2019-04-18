@@ -3,4 +3,5 @@ cd into the directory
 run setup_flask for first time setup
 open cmd and cd into project directory
 run venv\Scripts\activate
-to upgrade requirements.txt, run pip-compile --upgrade or pip-compile -P flask -P requests==2.0.0 # for specific packages and versions
+to upgrade to requirements.txt, run pip-compile --upgrade or pip-compile -P flask -P requests==2.0.0 # for specific packages and versions
+to add new dependancies, pip freeze > requirements.txt

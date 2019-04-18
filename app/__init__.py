@@ -6,6 +6,7 @@ from flask_login.login_manager import LoginManager
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
+from flask_mail import Mail
 
 microblogapp = Flask(__name__)
 microblogapp.config.from_object(Config)
@@ -13,6 +14,7 @@ db = SQLAlchemy(microblogapp)
 migrate = Migrate(microblogapp, db)
 login = LoginManager(microblogapp)
 login.login_view = 'login' #view function that handles login
+mail = Mail(microblogapp)
 
 from app import routes, models, errors
 
