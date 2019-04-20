@@ -23,15 +23,16 @@ if not microblogapp.debug:
     if microblogapp.config['MAIL_SERVER']:
         auth = None
         if microblogapp.config['MAIL_USERNAME'] or microblogapp.config['MAIL_PASSWORD']:
-            auth = (microblogapp.config['MAIL_SERVER'], microblogapp.config['MAIL_PASSWORD'])
+            auth = (microblogapp.config['MAIL_USERNAME'], microblogapp.config['MAIL_PASSWORD'])
         secure = None
         if microblogapp.config['MAIL_USE_TLS']:
             secure = ()
         mail_handler = SMTPHandler(mailhost=(microblogapp.config['MAIL_SERVER'], microblogapp.config['MAIL_PORT']), 
-                               fromaddr='no-reply@'+microblogapp.config['MAIL_SERVER'], toaddrs=microblogapp.config['ADMINS'],
+                               fromaddr=microblogapp.config['MAIL_USERNAME'], toaddrs=microblogapp.config['ADMINS'],
                                subject='Microblog failure', credentials=auth, secure=secure)
         mail_handler.setLevel(logging.ERROR)
         microblogapp.logger.addHandler(mail_handler)
+        #fromaddr='no-reply@'+microblogapp.config['MAIL_SERVER']
         
     #file logger configuration
     if not os.path.exists('logs'):
