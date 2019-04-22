@@ -6,12 +6,17 @@ Created on Apr 18, 2019
 from flask_mail import Message
 from app import mail, microblogapp
 from flask.templating import render_template
+from threading import Thread
+
+def sen_mail_async(microblogapp, msg):
+    with microblogapp.app_context():
+        mail.send(msg)
 
 def send_mail(subject, sender, recipients, text_body, html_body):
     msg = Message(subject, sender=sender, recipients=recipients)
     msg.body = text_body
     msg.html = html_body
-    mail.send(msg)
+    Thread(target=send_mail_async, args=(microblogapp, msg)).start()
     
 def send_password_reset_mail(user):
     token = user.get_reset_password_token()
