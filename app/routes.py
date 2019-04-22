@@ -169,6 +169,18 @@ def reset_password(token):
         flash('Your password has been reset.')
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
+
+@microblogapp.route('/delete_profile/<username>')
+@login_required
+def delete_profile(username):
+    user = User.query.filter_by(username=username).first()
+    if user is not None:
+        db.session.delete(user)
+        db.session.commit()
+        flash('The user profile {} has been successfully deleted!'.format(username))
+        return redirect(url_for('login'))
+    flash('No such user exists! oops!')
+    return redirect(url_for('login'))
         
 @microblogapp.before_request
 def before_request():  #this is called before every view function

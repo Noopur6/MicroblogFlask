@@ -11,6 +11,7 @@
                 <p>{{ user.followers.count() }} followers, {{ user.followed.count() }} following</p>
                 {% if user==current_user %}
                 <a href="{{ url_for('edit_profile') }}">Edit Profile</a>
+                <a href="{{ url_for('delete_profile', username=user.username) }}">Delete Profile</a>
                 {% elif not current_user.is_following(user) %}
                 <a href="{{ url_for('follow',username=user.username) }}">Follow</a>
                 {% else %}

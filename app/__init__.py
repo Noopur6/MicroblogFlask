@@ -42,4 +42,4 @@ if not microblogapp.debug:
     file_handler.setLevel(logging.INFO)
     microblogapp.logger.addHandler(file_handler)
     microblogapp.logger.setLevel(logging.INFO)
-    microblogapp.logger.info('Moicroblog startup')
+    microblogapp.logger.info('Microblog startup')

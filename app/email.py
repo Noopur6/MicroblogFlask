@@ -8,7 +8,7 @@ from app import mail, microblogapp
 from flask.templating import render_template
 from threading import Thread
 
-def sen_mail_async(microblogapp, msg):
+def send_mail_async(microblogapp, msg):
     with microblogapp.app_context():
         mail.send(msg)
 
