@@ -1,36 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
 {% if title %}
-<title>{{ title }} - Microblog</title>
+{{ title }} - Microblog
 {% else %}
-<title>Welcome to Microblog!</title>
+Welcome to Microblog!
 {% endif %}
-</head>
-<body>
-<div>Microblog: 
-<a href="{{ url_for('index') }}">Home</a>
-{% if current_user.is_anonymous %}
-<a href="{{ url_for('register') }}">Register</a>
-<a href="{{ url_for('login') }}">Login</a>
-{% else %}<!-- url_for(viewfunction, parameter value) takes an argument username and of course the view function-->
-<a href="{{ url_for('explore') }}">Explore</a>
-<a href="{{ url_for('user',username=current_user.username) }}">Profile</a>
-<a href="{{ url_for('logout') }}">Logout</a>
-{% endif %}
-</div>
-<hr>
+{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Microblog</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="{{ url_for('index') }}">
+      <span class="glyphicon glyphicon-home"></span>Home</a></li>
+      {% if current_user.is_anonymous %}
+      <li><a href="{{ url_for('register') }}">Register</a></li>
+      <li><a href="{{ url_for('login') }}">Login</a></li>
+      {% else %}<!-- url_for(viewfunction, parameter value) takes an argument username and of course the view function-->
+      <li><a href="{{ url_for('explore') }}">Explore</a></li>
+      <li><a href="{{ url_for('user',username=current_user.username) }}">Profile</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class='container'>
 <!-- flashed messages appear only once after get_flashed_messages() as they are removed from messages list -->
 {% with messages = get_flashed_messages() %}
 {% if messages %}
-<ul>
 	{% for message in messages %}
-	<li>{{ message }}</li>
+	<div class='alert alert-info' role='alert'>{{ message }}</div>
 	{% endfor %}
-</ul>
 {% endif %}
 {% endwith %}
-{% block content %}{% endblock %}
-</body>
-</html>
+ {# application content needs to be provided in the app_content block #}
+{% block app_content %}{% endblock %}
+</div>
+{% endblock %}
