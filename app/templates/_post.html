@@ -8,8 +8,12 @@
             </td>
             <td>
                 <a>
-                    Deleted User
+                    {{ _('Deleted User') }}
                 </a>
+             said {{ moment(post.timestamp).fromNow() }}:
+                <br>
+                {{ post.body }}
+            </td>
         {% else %}
             <td width="70px">
                 <a href="{{ url_for('user', username=post.author.username) }}">
@@ -17,13 +21,15 @@
                 </a>
             </td>
             <td>
+            {% set user_link %}
                 <a href="{{ url_for('user', username=post.author.username) }}">
                     {{ post.author.username }}
                 </a>
-         {% endif %}
-                says:
+               {% endset %}
+                {{ _('%(username)s said %(when)s',username=user_link, when=moment(post.timestamp).fromNow()) }}:
                 <br>
                 {{ post.body }}
             </td>
+            {% endif %}
         </tr>
 </table>

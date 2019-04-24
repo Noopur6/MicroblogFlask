@@ -5,7 +5,7 @@ Created on Apr 1, 2019
 '''
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user,logout_user
-from app import microblogapp
+from app import microblogapp, babel
 from app.models import User, Post
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, PasswordResetRequestForm, ResetPasswordForm
 from flask_login import login_required
@@ -13,6 +13,9 @@ from werkzeug.urls import url_parse
 from app import db
 from datetime import datetime
 from app.email import send_password_reset_mail
+from flask_babel import _ #provides translations
+from flask import g
+from flask_babel import get_locale
 
 @microblogapp.route('/', methods=['GET','POST'])
 @microblogapp.route('/index', methods=['GET','POST'])
@@ -23,7 +26,7 @@ def index():
         post = Post(body=form.post.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post is live now!')
+        flash(_('Your post is live now!'))
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     posts = current_user.followed_posts().paginate(page, microblogapp.config['POSTS_PER_PAGE'], False)
@@ -60,7 +63,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.verify_password(form.password.data):
             ## just flashing message
-            flash('Invalid username or password')
+            flash(_('Invalid username or password'))
             return redirect(url_for('login'))##the parameter is the method name not the url
         #this method registers a user as logged on by setting the value of current_user in the session
         login_user(user, remember=form.remember_me.data)
@@ -80,7 +83,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congrats! you have been successfully registered!')
+        flash(_('Congrats! you have been successfully registered!'))
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
     
@@ -103,7 +106,7 @@ def edit_profile():
         current_user.email = form.email.data
         current_user.about_me = form.about_me.data
         db.session.commit()
-        flash('your changes have been saved')
+        flash(_('your changes have been saved'))
         return redirect(url_for('edit_profile'))
     elif request.method == 'GET':#if it is a get request, pre-populate the fields with already saved data
         form.username.data = current_user.username
@@ -116,28 +119,28 @@ def edit_profile():
 def follow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('User not found')
+        flash(_('User not found'))
         return redirect(url_for('index'))
     elif user == current_user:
-        flash('You cannot follow yourself')
+        flash(_('You cannot follow yourself'))
         return redirect(url_for('index'))
     current_user.follow(user)
     db.session.commit()
-    flash('You have successfully followed {}'.format(username))
+    flash(_('You have successfully followed %(username)s',username))
     return redirect(url_for('user',username=username))
 
 @microblogapp.route('/unfollow/<username>')
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('User not found')
+        flash(_('User not found'))
         return redirect(url_for('index'))
     elif user == current_user:
-        flash('You cannot unfollow yourself')
+        flash(_('You cannot unfollow yourself'))
         return redirect(url_for('index'))
     current_user.unfollow(user)
     db.session.commit()
-    flash('You have successfully unfollowed {}'.format(username))
+    flash(_('You have successfully unfollowed %(username)s',username))
     return redirect(url_for('user',username=username))
 
 @microblogapp.route('/reset_password_request', methods=['GET', 'POST'])
@@ -149,10 +152,10 @@ def reset_password_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_mail(user)
-            flash('Check your email for instructions to reset your password')
+            flash(_('Check your email for instructions to reset your password'))
             return redirect(url_for('login'))
         else:
-            flash('Enter email you used to sign up')
+            flash(_('Enter email you used to sign up'))
     return render_template('reset_password_request.html', title='Reset password', form=form)
 
 @microblogapp.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -166,7 +169,7 @@ def reset_password(token):
     if form.validate_on_submit():
         user.set_password(form.new_password.data)
         db.session.commit()
-        flash('Your password has been reset.')
+        flash(_('Your password has been reset.'))
         return redirect(url_for('login'))
     return render_template('reset_password.html', form=form)
 
@@ -177,9 +180,9 @@ def delete_profile(username):
     if user is not None:
         db.session.delete(user)
         db.session.commit()
-        flash('The user profile {} has been successfully deleted!'.format(username))
+        flash(_('The user profile %(username) has been successfully deleted!',username))
         return redirect(url_for('login'))
-    flash('No such user exists! oops!')
+    flash(_("User %(username)s doesn't exist!",username))
     return redirect(url_for('login'))
         
 @microblogapp.before_request
@@ -187,6 +190,7 @@ def before_request():  #this is called before every view function
     if current_user.is_authenticated:
         current_user.last_seen = datetime.utcnow()#updating last seen value at every request
         db.session.commit()
+    g.locale = str(get_locale())
     
 @microblogapp.route('/logout')
 def logout():

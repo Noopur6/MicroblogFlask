@@ -3,7 +3,7 @@ Created on Apr 1, 2019
 
 @author: NSNO
 '''
-from app import microblogapp,db
+from app import microblogapp,db,cli
 from app.models import User,Post
 
 @microblogapp.shell_context_processor

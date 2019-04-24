@@ -8,17 +8,20 @@ from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 from flask_mail import Mail
 from flask_bootstrap import Bootstrap
+from flask_moment import Moment
+from flask_babel import Babel, lazy_gettext as _l
 
 microblogapp = Flask(__name__)
 microblogapp.config.from_object(Config)
 db = SQLAlchemy(microblogapp)
 migrate = Migrate(microblogapp, db)
 login = LoginManager(microblogapp)
-login.login_view = 'login' #view function that handles login
+login.login_view = 'login' #view function that handles login and is redirected to whenever the request is unauthenticated
+login.login_message = _l('Please login to access this page')
 mail = Mail(microblogapp)
 bootstrap = Bootstrap(microblogapp)
-
-from app import routes, models, errors
+moment = Moment(microblogapp)
+babel = Babel(microblogapp)
 
 if not microblogapp.debug:
     #mail configuration
@@ -45,3 +48,9 @@ if not microblogapp.debug:
     microblogapp.logger.addHandler(file_handler)
     microblogapp.logger.setLevel(logging.INFO)
     microblogapp.logger.info('Microblog startup')
+
+@babel.localeselector    
+def get_locale():
+    return request.accept_languages.best_match(microblogapp.config['LANGUAGES'])
+
+from app import routes, models, errors

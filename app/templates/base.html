@@ -1,10 +1,16 @@
 {% extends 'bootstrap/base.html' %}
 
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang(g.locale) }}
+{% endblock %}
+
 {% block title %}
 {% if title %}
 {{ title }} - Microblog
 {% else %}
-Welcome to Microblog!
+{{ _('Welcome to Microblog!') }}
 {% endif %}
 {% endblock %}
 
@@ -12,18 +18,18 @@ Welcome to Microblog!
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Microblog</a>
+      <a class="navbar-brand" href="#">{{ _('Microblog') }}</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="active"><a href="{{ url_for('index') }}">
-      <span class="glyphicon glyphicon-home"></span>Home</a></li>
+      <li><a href="{{ url_for('index') }}">
+      <span class="glyphicon glyphicon-home"></span> {{ _('Home') }}</a></li>
       {% if current_user.is_anonymous %}
-      <li><a href="{{ url_for('register') }}">Register</a></li>
-      <li><a href="{{ url_for('login') }}">Login</a></li>
+      <li><a href="{{ url_for('register') }}">{{ _('Register') }}</a></li>
+      <li><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> {{ _('Login') }}</a></li>
       {% else %}<!-- url_for(viewfunction, parameter value) takes an argument username and of course the view function-->
-      <li><a href="{{ url_for('explore') }}">Explore</a></li>
-      <li><a href="{{ url_for('user',username=current_user.username) }}">Profile</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+      <li><a href="{{ url_for('explore') }}">{{ _('Explore') }}</a></li>
+      <li><a href="{{ url_for('user',username=current_user.username) }}">{{ _('Profile') }}</a></li>
+      <li><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> {{ _('Logout') }}</a></li>
       {% endif %}
     </ul>
   </div>
